@@ -1,0 +1,56 @@
+<?php 
+    include "service/database.php";
+
+    session_start();
+
+    $resgister_message = "";
+
+    if (isset($_SESSION["is_login"])) {
+        header("location: dashboard.php");
+    }
+
+    if (isset($_POST["register"])) {
+        $username = $_POST["username"];
+        $password = $_POST["password"]; 
+        $hash_password = hash("sha256", $password);
+
+        try {
+            $sql = "insert into users (username, password) values ('$username', '$hash_password')";
+
+            if ($db->query($sql)) {
+                $resgister_message = "DAFTAR AKUN BERHASIL";
+            } else {
+                $resgister_message = "DAFTAR AKUN GAGAL COBA LAGI";
+            }       
+         } catch (mysqli_sql_exception $e) {
+            $resgister_message = $e;
+        }
+
+        $db->close();
+        
+    }
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<?php include "layout/header.html"?>
+
+    <h3>Daftar Akun</h3>
+    <i><?= $resgister_message ?></i>
+
+    <form action="register.php" method="POST">
+        <input type="text" placeholder="name" name="username">
+        <input type="password" placeholder="password" name="password">
+        <button type="submit" name="register">daftar sekarang</button>
+    </form>
+
+    <?php include "layout/footer.html" ?>
+</body>
+</html>
